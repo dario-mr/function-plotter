@@ -1,0 +1,20 @@
+name: Build and push image to Docker Hub
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build_and_push:
+    permissions:
+      contents: read
+    uses: dario-mr/ci-pipelines/.github/workflows/build-and-push-node.yml@main
+    with:
+      image-repo: dariomr8/function-plotter
+      platforms: linux/amd64
+      runner-label: ubuntu-24.04
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
