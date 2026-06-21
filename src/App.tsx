@@ -1,10 +1,18 @@
 import type { JSX } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Controls } from "./components/Controls";
 import { FunctionInput } from "./components/FunctionInput";
 import { GraphCanvas } from "./components/GraphCanvas";
 import { getFunctionValidationMessage } from "./lib/functionParser";
 import type { Viewport } from "./lib/graphSampler";
+import {
+  loadStoredExpression,
+  loadStoredSpeed,
+  loadStoredViewport,
+  saveStoredExpression,
+  saveStoredSpeed,
+  saveStoredViewport,
+} from "./lib/storage";
 
 const INITIAL_EXPRESSION = "sin(x)";
 const DEFAULT_VIEWPORT: Viewport = {
@@ -27,10 +35,14 @@ function getViewportValidationMessage(viewport: Viewport): string | null {
 }
 
 function App(): JSX.Element {
-  const [expression, setExpression] = useState<string>(INITIAL_EXPRESSION);
+  const [expression, setExpression] = useState<string>(() =>
+    loadStoredExpression(INITIAL_EXPRESSION, getFunctionValidationMessage),
+  );
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [speed, setSpeed] = useState<number>(1);
-  const [viewport, setViewport] = useState<Viewport>(DEFAULT_VIEWPORT);
+  const [speed, setSpeed] = useState<number>(() => loadStoredSpeed(1));
+  const [viewport, setViewport] = useState<Viewport>(() =>
+    loadStoredViewport(DEFAULT_VIEWPORT, getViewportValidationMessage),
+  );
   const [error, setError] = useState<string | null>(null);
   const [resetSignal, setResetSignal] = useState<number>(0);
   const [hasCompletedPlayback, setHasCompletedPlayback] = useState<boolean>(false);
@@ -97,6 +109,26 @@ function App(): JSX.Element {
     setIsPlaying(false);
     setHasCompletedPlayback(true);
   };
+
+  useEffect(() => {
+    if (expressionError !== null) {
+      return;
+    }
+
+    saveStoredExpression(expression);
+  }, [expression, expressionError]);
+
+  useEffect(() => {
+    saveStoredSpeed(speed);
+  }, [speed]);
+
+  useEffect(() => {
+    if (viewportError !== null) {
+      return;
+    }
+
+    saveStoredViewport(viewport);
+  }, [viewport, viewportError]);
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.16),transparent_35%),linear-gradient(180deg,#020617_0%,#0f172a_42%,#111827_100%)] text-slate-100">

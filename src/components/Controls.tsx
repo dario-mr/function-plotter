@@ -27,27 +27,8 @@ export function Controls(props: ControlsProps): JSX.Element {
   } = props;
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-slate-800/70 p-4 shadow-lg shadow-slate-950/30 backdrop-blur-sm">
+    <section className="flex h-full flex-col rounded-2xl border border-white/10 bg-slate-800/70 p-4 shadow-lg shadow-slate-950/30 backdrop-blur-sm">
       <p className="text-base font-semibold tracking-tight text-slate-50">Playback</p>
-
-      <div className="mt-4 flex flex-wrap gap-3">
-        <button
-          className="rounded-xl bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950 transition enabled:hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
-          disabled={!canPlay}
-          onClick={onTogglePlayback}
-          type="button"
-        >
-          {isPlaying ? "Pause" : "Play"}
-        </button>
-
-        <button
-          className="rounded-xl border border-white/10 bg-slate-950 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:border-cyan-300/40 hover:text-cyan-100"
-          onClick={onReset}
-          type="button"
-        >
-          Reset
-        </button>
-      </div>
 
       <div className="mt-5">
         <div className="flex items-center justify-between text-sm text-slate-300">
@@ -127,6 +108,25 @@ export function Controls(props: ControlsProps): JSX.Element {
         {viewportError !== null ? (
           <p className="mt-3 text-sm text-rose-300">{viewportError}</p>
         ) : null}
+      </div>
+
+      <div className="mt-6 flex flex-wrap gap-3">
+        <button
+          className="h-10 min-w-24 rounded-xl bg-cyan-400 px-3 py-2 text-sm font-semibold text-slate-950 transition enabled:hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
+          disabled={!canPlay}
+          onClick={onTogglePlayback}
+          type="button"
+        >
+          {isPlaying ? "Pause" : "Play"}
+        </button>
+
+        <button
+          className="h-10 min-w-24 rounded-xl border border-white/10 bg-slate-950 px-3 py-2 text-sm font-semibold text-slate-100 transition hover:border-cyan-300/40 hover:text-cyan-100"
+          onClick={onReset}
+          type="button"
+        >
+          Reset
+        </button>
       </div>
     </section>
   );
