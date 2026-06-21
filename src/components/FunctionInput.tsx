@@ -6,7 +6,7 @@ interface FunctionInputProps {
   onChange: (value: string) => void;
 }
 
-const EXAMPLES = ["sin(x)", "x^2 / 5", "sin(x) * x", "sqrt(abs(x))"];
+const EXAMPLES = ["tan(x / 3)", "x^2 / 5", "sin(x) * x", "sqrt(abs(x))"];
 
 export function FunctionInput(props: FunctionInputProps): JSX.Element {
   const { expression, error, onChange } = props;
