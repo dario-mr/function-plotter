@@ -1,73 +1,90 @@
-# React + TypeScript + Vite
+# Function Plotter
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A small React web app for plotting math functions and turning the graph into sound.
 
-Currently, two official plugins are available:
+You can enter an expression in terms of `x`, preview it on a Cartesian canvas, and play an animation
+that draws the function from left to right while a tone changes pitch based on the current `y`
+value.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Live function input with validation
+- Progressive graph drawing on canvas
+- Web Audio playback mapped from `y` values
+- Adjustable speed
+- Editable `x`/`y` viewport bounds
+- Local storage for the last valid function, speed, and bounds
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+- Vite
+- React
+- TypeScript
+- Tailwind
+- Canvas 2D API
+- Web Audio API
+- math.js
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Local Development
 
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
+Install dependencies:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Start the dev server:
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```bash
+npm run dev
 ```
+
+Build the app:
+
+```bash
+npm run build
+```
+
+Run linting:
+
+```bash
+npm run lint
+```
+
+Format the codebase:
+
+```bash
+npm run format
+```
+
+## Health And Info
+
+The production build generates:
+
+- `dist/health.json`
+- `dist/info.json`
+
+In the Docker/nginx runtime these are exposed as:
+
+- `/health`
+- `/info`
+
+## Docker
+
+Build the image:
+
+```bash
+docker build -t function-plotter .
+```
+
+Run it locally:
+
+```bash
+docker run --rm -p 8080:80 function-plotter
+```
+
+Then open:
+
+- `http://localhost:8080/`
+- `http://localhost:8080/health`
+- `http://localhost:8080/info`

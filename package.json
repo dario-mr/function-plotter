@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "install-registry": "npm install --registry=https://registry.npmjs.org/",
+    "refresh-lock": "rm -rf node_modules package-lock.json && npm install --registry=https://registry.npmjs.org/"
   },
   "dependencies": {
     "mathjs": "^15.2.0",
