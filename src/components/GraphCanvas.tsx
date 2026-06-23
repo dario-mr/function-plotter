@@ -296,7 +296,7 @@ function drawFunction(
 ): void {
   context.save();
   context.strokeStyle = "#0891b2";
-  context.lineWidth = 2.5;
+  context.lineWidth = 1.8;
   context.lineJoin = "round";
   context.lineCap = "round";
 
@@ -346,17 +346,17 @@ function drawCurrentPoint(
   context.save();
   context.fillStyle = "#22d3ee";
   context.strokeStyle = "rgba(8, 145, 178, 0.22)";
-  context.lineWidth = 8;
+  context.lineWidth = 2;
 
   const canvasX = graphXToCanvasX(point.x, viewport, canvasSize);
   const canvasY = graphYToCanvasY(point.y, viewport, canvasSize);
 
   context.beginPath();
-  context.arc(canvasX, canvasY, 5, 0, Math.PI * 2);
+  context.arc(canvasX, canvasY, 3, 0, Math.PI * 2);
   context.fill();
 
   context.beginPath();
-  context.arc(canvasX, canvasY, 11, 0, Math.PI * 2);
+  context.arc(canvasX, canvasY, 5, 0, Math.PI * 2);
   context.stroke();
   context.restore();
 }
