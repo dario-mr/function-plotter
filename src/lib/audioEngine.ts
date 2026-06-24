@@ -1,6 +1,10 @@
+const BASE_FREQUENCY = 300;
+const MIN_FREQUENCY = 80;
+const MAX_FREQUENCY = 2000;
+
 export function yToFrequency(y: number): number {
-  const frequency = 220 * Math.pow(2, y / 12);
-  return Math.min(2000, Math.max(80, frequency));
+  const frequency = BASE_FREQUENCY * Math.pow(2, y / 12);
+  return Math.min(MAX_FREQUENCY, Math.max(MIN_FREQUENCY, frequency));
 }
 
 export class AudioEngine {
