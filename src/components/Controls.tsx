@@ -112,7 +112,7 @@ export function Controls(props: ControlsProps): JSX.Element {
 
       <div className="mt-6 flex flex-wrap gap-3">
         <button
-          className="h-10 min-w-24 rounded-xl bg-cyan-400 px-3 py-2 text-sm font-semibold text-slate-950 transition enabled:hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
+          className="h-10 min-w-24 rounded-xl bg-cyan-400 px-3 py-2 font-sans text-sm font-semibold text-slate-950 transition enabled:hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
           disabled={!canPlay}
           onClick={onTogglePlayback}
           type="button"
@@ -121,7 +121,7 @@ export function Controls(props: ControlsProps): JSX.Element {
         </button>
 
         <button
-          className="h-10 min-w-24 rounded-xl border border-white/10 bg-slate-950 px-3 py-2 text-sm font-semibold text-slate-100 transition hover:border-cyan-300/40 hover:text-cyan-100"
+          className="h-10 min-w-24 rounded-xl border border-white/10 bg-slate-950 px-3 py-2 font-sans text-sm font-semibold text-slate-100 transition hover:border-cyan-300/40 hover:text-cyan-100"
           onClick={onReset}
           type="button"
         >

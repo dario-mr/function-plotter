@@ -24,11 +24,6 @@ body {
   min-width: 320px;
 }
 
-button,
-input {
-  font: inherit;
-}
-
 #root {
   min-height: 100vh;
 }

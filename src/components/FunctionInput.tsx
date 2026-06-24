@@ -44,7 +44,7 @@ export function FunctionInput(props: FunctionInputProps): JSX.Element {
         {EXAMPLES.map((example) => (
           <button
             key={example}
-            className="rounded-full border border-cyan-400/20 bg-cyan-400/8 px-3 py-1 text-xs font-medium text-cyan-100 transition hover:border-cyan-300/40 hover:bg-cyan-300/15"
+            className="rounded-full border border-cyan-400/20 bg-cyan-400/8 px-3 py-1 font-mono text-xs font-medium text-cyan-100 transition hover:border-cyan-300/40 hover:bg-cyan-300/15"
             onClick={() => {
               onChange(example);
             }}
