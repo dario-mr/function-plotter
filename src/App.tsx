@@ -4,6 +4,7 @@ import { Controls } from "./components/Controls";
 import { FunctionInput } from "./components/FunctionInput";
 import { GraphCanvas } from "./components/GraphCanvas";
 import { getFunctionValidationMessage } from "./lib/functionParser";
+import { prepareAudioForPlayback } from "./lib/iosAudio";
 import type { Viewport } from "./lib/graphSampler";
 import {
   loadStoredExpression,
@@ -197,6 +198,10 @@ function App(): JSX.Element {
   const handleExpressionCommit = (): void => {
     setRecentExpressions(saveStoredRecentExpression(expression, getFunctionValidationMessage));
   };
+
+  useEffect(() => {
+    prepareAudioForPlayback();
+  }, []);
 
   useEffect(() => {
     if (expressionError !== null) {

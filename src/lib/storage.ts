@@ -54,7 +54,9 @@ export function loadStoredRecentExpressions(validateExpression: ValidationFn<str
       .filter((value): value is string => typeof value === "string")
       .map((value) => value.trim())
       .filter((value, index, values) => {
-        return value !== "" && validateExpression(value) === null && values.indexOf(value) === index;
+        return (
+          value !== "" && validateExpression(value) === null && values.indexOf(value) === index
+        );
       })
       .slice(0, MAX_RECENT_EXPRESSIONS);
   } catch {

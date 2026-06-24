@@ -1,6 +1,13 @@
+import { prepareAudioForPlayback } from "./iosAudio";
+
 const BASE_FREQUENCY = 250;
 const MIN_FREQUENCY = 80;
 const MAX_FREQUENCY = 2000;
+
+interface WindowWithAudioContext extends Window {
+  AudioContext?: typeof AudioContext;
+  webkitAudioContext?: typeof AudioContext;
+}
 
 export function yToFrequency(y: number): number {
   const frequency = BASE_FREQUENCY * Math.pow(2, y / 12);
@@ -17,6 +24,8 @@ export class AudioEngine {
   private isPlaying = false;
 
   public async start(): Promise<void> {
+    prepareAudioForPlayback();
+
     const audioContext = this.getAudioContext();
     if (audioContext === null) {
       return;
@@ -86,7 +95,14 @@ export class AudioEngine {
       return null;
     }
 
-    this.audioContext ??= new AudioContext();
+    const windowWithAudioContext = window as WindowWithAudioContext;
+    const AudioContextConstructor =
+      windowWithAudioContext.AudioContext ?? windowWithAudioContext.webkitAudioContext;
+    if (AudioContextConstructor === undefined) {
+      return null;
+    }
+
+    this.audioContext ??= new AudioContextConstructor();
 
     return this.audioContext;
   }
