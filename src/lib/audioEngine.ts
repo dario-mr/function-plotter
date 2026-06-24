@@ -1,4 +1,4 @@
-const BASE_FREQUENCY = 300;
+const BASE_FREQUENCY = 250;
 const MIN_FREQUENCY = 80;
 const MAX_FREQUENCY = 2000;
 

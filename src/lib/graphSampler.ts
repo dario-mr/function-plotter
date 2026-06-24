@@ -13,6 +13,15 @@ export interface Viewport {
 }
 
 export const DEFAULT_SAMPLE_COUNT = 1000;
+const SAMPLES_PER_X_UNIT = 64;
+const MAX_SAMPLE_COUNT = 8000;
+
+export function getRecommendedSampleCount(viewport: Viewport): number {
+  const xRange = Math.max(0, viewport.xMax - viewport.xMin);
+  const rangeDrivenSampleCount = Math.ceil(xRange * SAMPLES_PER_X_UNIT) + 1;
+
+  return Math.min(MAX_SAMPLE_COUNT, Math.max(DEFAULT_SAMPLE_COUNT, rangeDrivenSampleCount));
+}
 
 export function sampleFunction(
   evaluator: FunctionEvaluator,

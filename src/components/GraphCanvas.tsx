@@ -3,12 +3,18 @@ import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { AudioEngine } from "../lib/audioEngine";
 import { graphXToCanvasX, graphYToCanvasY, type CanvasSize } from "../lib/coordinateMapper";
 import { createFunctionEvaluator, getFunctionValidationMessage } from "../lib/functionParser";
-import { sampleFunction, type Point, type Viewport } from "../lib/graphSampler";
+import {
+  DEFAULT_SAMPLE_COUNT,
+  getRecommendedSampleCount,
+  sampleFunction,
+  type Point,
+  type Viewport,
+} from "../lib/graphSampler";
 
 const LOGICAL_CANVAS_HEIGHT_MOBILE = 500;
 const LOGICAL_CANVAS_HEIGHT_DESKTOP = 660;
-const SAMPLE_COUNT = 1000;
 const SAMPLES_PER_SECOND = 240;
+const SAMPLE_RATE_ACCELERATION_EXPONENT = 0.5;
 
 interface GraphCanvasProps {
   expression: string;
@@ -42,14 +48,25 @@ export function GraphCanvas(props: GraphCanvasProps): JSX.Element {
     return getFunctionValidationMessage(expression);
   }, [expression]);
 
+  const sampleCount = useMemo<number>(() => {
+    return getRecommendedSampleCount(viewport);
+  }, [viewport]);
+
   const points = useMemo<Point[]>(() => {
     if (expressionError !== null) {
       return [];
     }
 
     const evaluator = createFunctionEvaluator(expression);
-    return sampleFunction(evaluator, viewport, SAMPLE_COUNT);
-  }, [expression, expressionError, viewport]);
+    return sampleFunction(evaluator, viewport, sampleCount);
+  }, [expression, expressionError, sampleCount, viewport]);
+
+  const effectiveSamplesPerSecond = useMemo<number>(() => {
+    const sampleDensityMultiplier = sampleCount / DEFAULT_SAMPLE_COUNT;
+    return (
+      SAMPLES_PER_SECOND * Math.pow(sampleDensityMultiplier, SAMPLE_RATE_ACCELERATION_EXPONENT)
+    );
+  }, [sampleCount]);
 
   const drawScene = useEffectEvent((): void => {
     const canvas = canvasRef.current;
@@ -163,7 +180,7 @@ export function GraphCanvas(props: GraphCanvasProps): JSX.Element {
         lastTimestampRef.current = timestamp;
 
         const nextProgress =
-          fractionalProgressRef.current + deltaSeconds * SAMPLES_PER_SECOND * speed;
+          fractionalProgressRef.current + deltaSeconds * effectiveSamplesPerSecond * speed;
         const stepCount = Math.floor(nextProgress);
         fractionalProgressRef.current = nextProgress - stepCount;
 
@@ -199,7 +216,7 @@ export function GraphCanvas(props: GraphCanvasProps): JSX.Element {
       cancelAnimation();
       audioEngine.stop();
     };
-  }, [expressionError, isPlaying, points, speed]);
+  }, [effectiveSamplesPerSecond, expressionError, isPlaying, points, speed]);
 
   useEffect(() => {
     const audioEngine = audioEngineRef.current;
