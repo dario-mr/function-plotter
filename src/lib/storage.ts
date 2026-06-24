@@ -2,11 +2,13 @@ import type { Viewport } from "./graphSampler";
 
 const STORAGE_KEYS = {
   expression: "function-plotter.expression",
+  recentExpressions: "function-plotter.recent-expressions",
   speed: "function-plotter.speed",
   viewport: "function-plotter.viewport",
 } as const;
 
 type ValidationFn<TValue> = (value: TValue) => string | null;
+const MAX_RECENT_EXPRESSIONS = 5;
 
 export function loadStoredExpression(
   fallbackExpression: string,
@@ -30,6 +32,62 @@ export function saveStoredExpression(expression: string): void {
   }
 
   window.localStorage.setItem(STORAGE_KEYS.expression, expression);
+}
+
+export function loadStoredRecentExpressions(validateExpression: ValidationFn<string>): string[] {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  const storedRecentExpressions = window.localStorage.getItem(STORAGE_KEYS.recentExpressions);
+  if (storedRecentExpressions === null) {
+    return [];
+  }
+
+  try {
+    const parsedRecentExpressions: unknown = JSON.parse(storedRecentExpressions);
+    if (!Array.isArray(parsedRecentExpressions)) {
+      return [];
+    }
+
+    return parsedRecentExpressions
+      .filter((value): value is string => typeof value === "string")
+      .map((value) => value.trim())
+      .filter((value, index, values) => {
+        return value !== "" && validateExpression(value) === null && values.indexOf(value) === index;
+      })
+      .slice(0, MAX_RECENT_EXPRESSIONS);
+  } catch {
+    return [];
+  }
+}
+
+export function saveStoredRecentExpression(
+  expression: string,
+  validateExpression: ValidationFn<string>,
+): string[] {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  const normalizedExpression = expression.trim();
+  if (normalizedExpression === "" || validateExpression(normalizedExpression) !== null) {
+    return loadStoredRecentExpressions(validateExpression);
+  }
+
+  const nextRecentExpressions = [
+    normalizedExpression,
+    ...loadStoredRecentExpressions(validateExpression).filter(
+      (value) => value !== normalizedExpression,
+    ),
+  ].slice(0, MAX_RECENT_EXPRESSIONS);
+
+  window.localStorage.setItem(
+    STORAGE_KEYS.recentExpressions,
+    JSON.stringify(nextRecentExpressions),
+  );
+
+  return nextRecentExpressions;
 }
 
 export function loadStoredSpeed(fallbackSpeed: number): number {

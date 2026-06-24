@@ -7,14 +7,17 @@ import { getFunctionValidationMessage } from "./lib/functionParser";
 import type { Viewport } from "./lib/graphSampler";
 import {
   loadStoredExpression,
+  loadStoredRecentExpressions,
   loadStoredSpeed,
   loadStoredViewport,
+  saveStoredRecentExpression,
   saveStoredExpression,
   saveStoredSpeed,
   saveStoredViewport,
 } from "./lib/storage";
 
 const INITIAL_EXPRESSION = "sin(x)";
+const FALLBACK_EXPRESSIONS = ["tan(x / 3)", "x^2 / 5", "sin(x) * x", "sqrt(abs(x))", "cos(x)"];
 const DEFAULT_VIEWPORT: Viewport = {
   xMin: -10,
   xMax: 10,
@@ -67,6 +70,9 @@ function App(): JSX.Element {
   const [expression, setExpression] = useState<string>(() =>
     loadStoredExpression(INITIAL_EXPRESSION, getFunctionValidationMessage),
   );
+  const [recentExpressions, setRecentExpressions] = useState<string[]>(() =>
+    loadStoredRecentExpressions(getFunctionValidationMessage),
+  );
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [speed, setSpeed] = useState<number>(() => loadStoredSpeed(1));
   const [viewport, setViewport] = useState<Viewport>(() =>
@@ -82,6 +88,22 @@ function App(): JSX.Element {
   const expressionError = useMemo<string | null>(() => {
     return getFunctionValidationMessage(expression);
   }, [expression]);
+
+  const visibleExpressions = useMemo<string[]>(() => {
+    const dedupedExpressions = [...recentExpressions];
+
+    for (const fallbackExpression of FALLBACK_EXPRESSIONS) {
+      if (dedupedExpressions.length >= 5) {
+        break;
+      }
+
+      if (!dedupedExpressions.includes(fallbackExpression)) {
+        dedupedExpressions.push(fallbackExpression);
+      }
+    }
+
+    return dedupedExpressions.slice(0, 5);
+  }, [recentExpressions]);
 
   const viewportError = useMemo<string | null>(() => {
     for (const value of Object.values(viewportInput)) {
@@ -133,6 +155,7 @@ function App(): JSX.Element {
       return;
     }
 
+    setRecentExpressions(saveStoredRecentExpression(expression, getFunctionValidationMessage));
     setError(null);
     if (hasCompletedPlayback) {
       setResetSignal((currentValue) => currentValue + 1);
@@ -171,6 +194,10 @@ function App(): JSX.Element {
     setHasCompletedPlayback(true);
   };
 
+  const handleExpressionCommit = (): void => {
+    setRecentExpressions(saveStoredRecentExpression(expression, getFunctionValidationMessage));
+  };
+
   useEffect(() => {
     if (expressionError !== null) {
       return;
@@ -200,6 +227,8 @@ function App(): JSX.Element {
               expression={expression}
               error={error}
               onChange={handleExpressionChange}
+              onCommit={handleExpressionCommit}
+              recentExpressions={visibleExpressions}
             />
 
             <Controls

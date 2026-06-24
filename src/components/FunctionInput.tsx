@@ -4,12 +4,12 @@ interface FunctionInputProps {
   expression: string;
   error: string | null;
   onChange: (value: string) => void;
+  onCommit: () => void;
+  recentExpressions: string[];
 }
 
-const EXAMPLES = ["tan(x / 3)", "x^2 / 5", "sin(x) * x", "sqrt(abs(x))"];
-
 export function FunctionInput(props: FunctionInputProps): JSX.Element {
-  const { expression, error, onChange } = props;
+  const { expression, error, onChange, onCommit, recentExpressions } = props;
 
   return (
     <section className="rounded-2xl border border-white/10 bg-slate-800/70 p-4 shadow-lg shadow-slate-950/30 backdrop-blur-sm">
@@ -27,6 +27,12 @@ export function FunctionInput(props: FunctionInputProps): JSX.Element {
           onChange={(event) => {
             onChange(event.target.value);
           }}
+          onBlur={onCommit}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              onCommit();
+            }
+          }}
           placeholder="sin(x)"
           spellCheck={false}
           type="text"
@@ -40,20 +46,22 @@ export function FunctionInput(props: FunctionInputProps): JSX.Element {
         </div>
       ) : null}
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        {EXAMPLES.map((example) => (
-          <button
-            key={example}
-            className="rounded-full border border-cyan-400/20 bg-cyan-400/8 px-3 py-1 font-mono text-xs font-medium text-cyan-100 transition hover:border-cyan-300/40 hover:bg-cyan-300/15"
-            onClick={() => {
-              onChange(example);
-            }}
-            type="button"
-          >
-            {example}
-          </button>
-        ))}
-      </div>
+      {recentExpressions.length > 0 ? (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {recentExpressions.map((recentExpression) => (
+            <button
+              key={recentExpression}
+              className="rounded-full border border-cyan-400/20 bg-cyan-400/8 px-3 py-1 font-mono text-xs font-medium text-cyan-100 transition hover:border-cyan-300/40 hover:bg-cyan-300/15"
+              onClick={() => {
+                onChange(recentExpression);
+              }}
+              type="button"
+            >
+              {recentExpression}
+            </button>
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }
