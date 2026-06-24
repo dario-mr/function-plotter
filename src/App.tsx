@@ -22,6 +22,35 @@ const DEFAULT_VIEWPORT: Viewport = {
   yMax: 10,
 };
 
+type ViewportInput = Record<keyof Viewport, string>;
+
+function getViewportInput(viewport: Viewport): ViewportInput {
+  return {
+    xMin: String(viewport.xMin),
+    xMax: String(viewport.xMax),
+    yMin: String(viewport.yMin),
+    yMax: String(viewport.yMax),
+  };
+}
+
+function parseViewportInput(viewportInput: ViewportInput): Viewport | null {
+  const xMin = Number(viewportInput.xMin);
+  const xMax = Number(viewportInput.xMax);
+  const yMin = Number(viewportInput.yMin);
+  const yMax = Number(viewportInput.yMax);
+
+  if (
+    !Number.isFinite(xMin) ||
+    !Number.isFinite(xMax) ||
+    !Number.isFinite(yMin) ||
+    !Number.isFinite(yMax)
+  ) {
+    return null;
+  }
+
+  return { xMin, xMax, yMin, yMax };
+}
+
 function getViewportValidationMessage(viewport: Viewport): string | null {
   if (viewport.xMin >= viewport.xMax) {
     return "xMin must be smaller than xMax.";
@@ -43,6 +72,9 @@ function App(): JSX.Element {
   const [viewport, setViewport] = useState<Viewport>(() =>
     loadStoredViewport(DEFAULT_VIEWPORT, getViewportValidationMessage),
   );
+  const [viewportInput, setViewportInput] = useState<ViewportInput>(() =>
+    getViewportInput(viewport),
+  );
   const [error, setError] = useState<string | null>(null);
   const [resetSignal, setResetSignal] = useState<number>(0);
   const [hasCompletedPlayback, setHasCompletedPlayback] = useState<boolean>(false);
@@ -52,8 +84,28 @@ function App(): JSX.Element {
   }, [expression]);
 
   const viewportError = useMemo<string | null>(() => {
-    return getViewportValidationMessage(viewport);
-  }, [viewport]);
+    for (const value of Object.values(viewportInput)) {
+      if (value.trim() === "") {
+        return "Fill in all bounds before playing.";
+      }
+    }
+
+    const nextViewport = parseViewportInput(viewportInput);
+    if (nextViewport === null) {
+      return "Bounds must be valid numbers.";
+    }
+
+    if (
+      nextViewport.xMin === 0 ||
+      nextViewport.xMax === 0 ||
+      nextViewport.yMin === 0 ||
+      nextViewport.yMax === 0
+    ) {
+      return "Bounds cannot be 0.";
+    }
+
+    return getViewportValidationMessage(nextViewport);
+  }, [viewportInput]);
 
   const canPlay = expressionError === null && viewportError === null;
 
@@ -95,11 +147,20 @@ function App(): JSX.Element {
     setResetSignal((currentValue) => currentValue + 1);
   };
 
-  const handleViewportChange = (key: keyof Viewport, value: number): void => {
-    setViewport((currentViewport) => ({
-      ...currentViewport,
-      [key]: value,
-    }));
+  const handleViewportChange = (key: keyof Viewport, value: string): void => {
+    setViewportInput((currentViewportInput) => {
+      const nextViewportInput = {
+        ...currentViewportInput,
+        [key]: value,
+      };
+      const nextViewport = parseViewportInput(nextViewportInput);
+
+      if (nextViewport !== null) {
+        setViewport(nextViewport);
+      }
+
+      return nextViewportInput;
+    });
     setIsPlaying(false);
     setHasCompletedPlayback(false);
     setResetSignal((currentValue) => currentValue + 1);
@@ -145,7 +206,7 @@ function App(): JSX.Element {
               canPlay={canPlay}
               isPlaying={isPlaying}
               speed={speed}
-              viewport={viewport}
+              viewport={viewportInput}
               viewportError={viewportError}
               onReset={handleReset}
               onSpeedChange={setSpeed}

@@ -5,12 +5,12 @@ interface ControlsProps {
   canPlay: boolean;
   isPlaying: boolean;
   speed: number;
-  viewport: Viewport;
+  viewport: Record<keyof Viewport, string>;
   viewportError: string | null;
   onReset: () => void;
   onSpeedChange: (value: number) => void;
   onTogglePlayback: () => void;
-  onViewportChange: (key: keyof Viewport, value: number) => void;
+  onViewportChange: (key: keyof Viewport, value: string) => void;
 }
 
 export function Controls(props: ControlsProps): JSX.Element {
@@ -58,7 +58,7 @@ export function Controls(props: ControlsProps): JSX.Element {
               id="xMin"
               className="mt-1 block w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
               onChange={(event) => {
-                onViewportChange("xMin", Number(event.target.value));
+                onViewportChange("xMin", event.target.value);
               }}
               step="1"
               type="number"
@@ -71,7 +71,7 @@ export function Controls(props: ControlsProps): JSX.Element {
               id="xMax"
               className="mt-1 block w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
               onChange={(event) => {
-                onViewportChange("xMax", Number(event.target.value));
+                onViewportChange("xMax", event.target.value);
               }}
               step="1"
               type="number"
@@ -84,7 +84,7 @@ export function Controls(props: ControlsProps): JSX.Element {
               id="yMin"
               className="mt-1 block w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
               onChange={(event) => {
-                onViewportChange("yMin", Number(event.target.value));
+                onViewportChange("yMin", event.target.value);
               }}
               step="1"
               type="number"
@@ -97,7 +97,7 @@ export function Controls(props: ControlsProps): JSX.Element {
               id="yMax"
               className="mt-1 block w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
               onChange={(event) => {
-                onViewportChange("yMax", Number(event.target.value));
+                onViewportChange("yMax", event.target.value);
               }}
               step="1"
               type="number"
